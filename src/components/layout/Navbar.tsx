@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,19 +16,29 @@ import {
   Mail,
   Menu,
   X,
-  ArrowLeft,
-  Shield
 } from 'lucide-react'
 
-const navLinks = [
-  { id: 'home', label: 'Home', href: '#home', icon: Home },
-  { id: 'services', label: 'Services', href: '#services', icon: Briefcase },
-  { id: 'courses', label: 'Courses', href: '#courses', icon: GraduationCap },
-  { id: 'ai-tools', label: 'AI Tools', href: '#ai-tools', icon: Bot },
-  { id: 'community', label: 'Community', href: '#community', icon: Users },
-  { id: 'meetups', label: 'Meetups', href: '#meetups', icon: Calendar },
-  { id: 'team', label: 'Team', href: '#team', icon: UserRound },
-  { id: 'contact', label: 'Contact', href: '#contact', icon: Mail },
+/* ================= SIDE DOCK (HOME SECTIONS) ================= */
+const sideLinks = [
+  { id: 'home', icon: Home },
+  { id: 'services', icon: Briefcase },
+  { id: 'courses', icon: GraduationCap },
+  { id: 'ai-tools', icon: Bot },
+  { id: 'community', icon: Users },
+  { id: 'meetups', icon: Calendar },
+  { id: 'team', icon: UserRound },
+  { id: 'contact', icon: Mail },
+]
+
+/* ================= TOP NAV (PAGES) ================= */
+const topLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About Us' },
+  { href: '/services', label: 'Services' },
+  { href: '/softwares', label: 'Software' },
+  { href: '/courses', label: 'Courses' },
+  { href: '/team', label: 'Team Members' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 export default function Navigation() {
@@ -35,20 +46,19 @@ export default function Navigation() {
   const isHome = pathname === '/'
 
   const [open, setOpen] = useState(false)
-  const [active, setActive] = useState<string>('home')
-  const [scrolled, setScrolled] = useState(false)
-  const [showMinimal, setShowMinimal] = useState(false)
+  const [active, setActive] = useState('home')
+  const [showDock, setShowDock] = useState(false)
 
+  /* ================= SCROLL TRACK (ONLY HOME) ================= */
   useEffect(() => {
     if (!isHome) return
 
     const onScroll = () => {
       const y = window.scrollY
-      setScrolled(y > 50)
-      setShowMinimal(y > 400)
+      setShowDock(y > window.innerHeight * 0.15)
 
-      const offset = y + 150
-      for (const link of navLinks) {
+      const offset = y + 180
+      for (const link of sideLinks) {
         const el = document.getElementById(link.id)
         if (!el) continue
         if (offset >= el.offsetTop && offset < el.offsetTop + el.offsetHeight) {
@@ -66,113 +76,94 @@ export default function Navigation() {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
     if (!el) return
-    const top = el.getBoundingClientRect().top + window.scrollY - 80
-    window.scrollTo({ top, behavior: 'smooth' })
-    setOpen(false)
+    window.scrollTo({
+      top: el.offsetTop - 90,
+      behavior: 'smooth',
+    })
   }
 
-  const activeIndex = navLinks.findIndex(l => l.id === active)
+  const activeIndex = sideLinks.findIndex(l => l.id === active)
 
   return (
     <>
-      {/* MAIN NAVBAR */}
-      <nav
-        className={`fixed inset-x-0 top-0 z-50 h-20 border-b transition ${
-          scrolled
-            ? 'border-border bg-background/90 backdrop-blur'
-            : 'border-transparent bg-background/70 backdrop-blur'
-        }`}
+      {/* ================= TOP NAVBAR (ALL PAGES) ================= */}
+      <motion.nav
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="fixed inset-x-0 top-0 z-50 h-16 bg-background/85 backdrop-blur border-b border-border"
       >
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            {!isHome && (
-              <Link
-                href="/"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-primary/10"
-              >
-                <ArrowLeft size={18} />
-              </Link>
-            )}
-
-            <Link href="/" className="text-xl font-black tracking-tight">
-              <span className="bg-gradient-to-r from-primary to-[var(--electric-purple)] bg-clip-text text-transparent">
-                RaYnk
-              </span>
-              <span className="ml-1 font-light text-foreground">Labs</span>
-            </Link>
-          </div>
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6">
+          {/* LOGO */}
+          <Link href="/">
+            <Image
+              src="/images/logos.png"
+              alt="RaYnk Labs"
+              width={130}
+              height={36}
+              priority
+            />
+          </Link>
 
           {/* DESKTOP LINKS */}
-          <div className="hidden items-center gap-1 md:flex">
-            {navLinks.slice(1).map(link => (
-              <button
-                key={link.id}
-                onClick={() => scrollTo(link.id)}
-                className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                  active === link.id
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:bg-primary/10 hover:text-foreground'
-                }`}
+          <div className="hidden md:flex items-center gap-10">
+            {topLinks.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group relative text-sm font-medium text-muted-foreground hover:text-foreground transition"
               >
                 {link.label}
-              </button>
+                <span className="absolute -bottom-2 left-0 h-[2px] w-full bg-primary rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+              </Link>
             ))}
           </div>
 
-          {/* ACTIONS */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/admin"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-primary/10"
-            >
-              <Shield size={18} />
-            </Link>
-
-            <button
-              onClick={() => setOpen(!open)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-primary/10 md:hidden"
-            >
-              {open ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
+          {/* MOBILE MENU BUTTON */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden flex h-9 w-9 items-center justify-center rounded-full border border-border"
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
 
         {/* MOBILE MENU */}
         <AnimatePresence>
           {open && (
             <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              className="absolute inset-x-0 top-20 border-b border-border bg-background/95 backdrop-blur md:hidden"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="md:hidden bg-background/95 backdrop-blur border-b border-border"
             >
-              <div className="flex flex-col p-4">
-                {navLinks.slice(1).map(link => (
-                  <button
-                    key={link.id}
-                    onClick={() => scrollTo(link.id)}
-                    className="rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground transition hover:bg-primary/10"
+              <div className="flex flex-col gap-2 p-4">
+                {topLinks.map(link => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="px-4 py-3 text-sm hover:text-primary transition"
                   >
                     {link.label}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </nav>
+      </motion.nav>
 
-      {/* MINIMAL BOTTOM NAV */}
+      {/* ================= SIDE DOCK (ONLY HOME PAGE) ================= */}
       <AnimatePresence>
-        {isHome && showMinimal && (
+        {isHome && showDock && (
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2"
+            initial={{ opacity: 0, x: 80 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 80 }}
+            className="fixed z-40 top-1/2 right-0 -translate-y-1/2"
           >
-            <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-background/95 px-3 py-2 backdrop-blur">
-              {navLinks.map((link, i) => {
+            <div className="flex flex-col items-center gap-3 rounded-l-full bg-background/90 backdrop-blur border border-border px-3 py-4">
+              {sideLinks.map((link, i) => {
                 const Icon = link.icon
                 const isActive = link.id === active
                 const near =
@@ -184,14 +175,19 @@ export default function Navigation() {
                   <motion.button
                     key={link.id}
                     onClick={() => scrollTo(link.id)}
-                    className={`flex items-center justify-center rounded-full transition ${
-                      isActive
-                        ? 'h-14 w-14 bg-primary/25 text-primary'
-                        : near
-                        ? 'h-12 w-12 bg-primary/10 text-primary'
-                        : 'h-10 w-10 text-muted-foreground hover:bg-primary/10'
-                    }`}
-                    whileHover={{ scale: 1.1 }}
+                    className="cursor-pointer flex items-center justify-center rounded-full"
+                    whileHover={{ scale: 1.25 }}
+                    animate={{
+                      width: isActive ? 56 : near ? 48 : 40,
+                      height: isActive ? 56 : near ? 48 : 40,
+                      backgroundColor: isActive
+                        ? 'rgba(59,167,255,0.25)'
+                        : 'transparent',
+                      color: isActive
+                        ? 'var(--primary)'
+                        : 'var(--muted-foreground)',
+                    }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
                     <Icon size={18} />
                   </motion.button>

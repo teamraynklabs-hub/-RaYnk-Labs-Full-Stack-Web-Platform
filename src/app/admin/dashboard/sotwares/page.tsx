@@ -1,0 +1,57 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import AdminFormModal from '@/components/admin/AdminFormModal'
+
+export default function AdminSoftwaresPage() {
+  const [tools, setTools] = useState<any[]>([])
+  const [open, setOpen] = useState(false)
+  const [edit, setEdit] = useState<any>(null)
+
+  const load = async () => {
+    const res = await fetch('/api/admin/softwares')
+    setTools(await res.json())
+  }
+
+  const save = async (data: any) => {
+    await fetch('/api/admin/softwares', {
+      method: edit ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, id: edit?._id }),
+    })
+    load()
+  }
+
+  useEffect(() => { load() }, [])
+
+  return (
+    <section className="section">
+      <div className="flex justify-between mb-6">
+        <h1 className="section-title gradient-text">Manage Softwares</h1>
+        <button onClick={() => { setEdit(null); setOpen(true) }} className="btn-primary">
+          + Add Software
+        </button>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {tools.map(t => (
+          <div key={t._id} className="glass-card">
+            <h3 className="font-bold">{t.title}</h3>
+            <p className="section-desc">{t.description}</p>
+            <button onClick={() => { setEdit(t); setOpen(true) }} className="btn-secondary mt-4">
+              Edit
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <AdminFormModal
+        open={open}
+        onClose={() => setOpen(false)}
+        title={edit ? 'Edit Software' : 'Add Software'}
+        initialData={edit}
+        onSubmit={save}
+      />
+    </section>
+  )
+}

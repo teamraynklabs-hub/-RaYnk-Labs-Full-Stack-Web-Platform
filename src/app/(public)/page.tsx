@@ -1,28 +1,61 @@
 'use client'
 
-import Hero from "@/components/cards/Hero"
-import About from "./about/page"
-import AITools from "@/components/cards/AITools"
-import Community from "@/components/cards/Community"
-import Meetups from "@/components/cards/Meetups"
-import TurningPoint from "@/components/cards/TurningPoint"
+/* =======================
+   SECTION IMPORTS
+======================= */
+import Hero from '@/components/cards/Hero'
+import AboutPage from '@/components/cards/About'
+import ServiceCard from '@/components/cards/ServiceCard'
+import SoftwareCard from '@/components/cards/SoftwareCard'
+import Community from '@/components/cards/Community'
+import TeamCard from '@/components/cards/TeamCard'
+import Meetups from '@/components/cards/Meetups'
+import TurningPoint from '@/components/cards/TurningPoint'
+import ContactCard from '@/components/cards/ContactCard'
+import CourseCard from '@/components/cards/CourseCard'
+
+/* =======================
+   HOME PAGE
+======================= */
 export default function Home() {
-  
   return (
-    <main style={{ 
-      minHeight: '100vh', 
-      background: '#0D0D0D',
-      color: '#FFFFFF',
-      width: '100%',
-      margin: 0,
-      padding: 0
-    }}>
+    <main
+      className="
+        min-h-screen 
+        w-full 
+        bg-background 
+        text-foreground
+      "
+    >
+      {/* ================= HERO ================= */}
       <Hero />
-      <About />
-      <AITools />
-      <Community />
-      <Meetups />
+
+      {/* ================= ABOUT ================= */}
+      <AboutPage />
+
+      {/* ================= SERVICES ================= */}
+      <ServiceCard />
+
+      {/* ================= COURSES ================= */}
+      <CourseCard />
+
+      {/* ================= SOFTWARE / TOOLS ================= */}
+      <SoftwareCard />
+
+      {/* ================= TURNING POINT ================= */}
       <TurningPoint />
+
+      {/* ================= COMMUNITY ================= */}
+      <Community />
+
+      {/* ================= MEETUPS / EVENTS ================= */}
+      <Meetups />
+
+      {/* ================= TEAM ================= */}
+      <TeamCard />
+
+      {/* ================= CONTACT ================= */}
+      <ContactCard />
     </main>
   )
 }
