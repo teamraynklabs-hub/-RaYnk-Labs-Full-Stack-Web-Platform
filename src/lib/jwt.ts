@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-
+export const runtime = "nodejs";
 const JWT_SECRET = process.env.JWT_SECRET as string
 
 export function signAdminJWT(payload: any) {

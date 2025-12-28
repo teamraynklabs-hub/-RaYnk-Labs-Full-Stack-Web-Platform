@@ -14,20 +14,22 @@ interface FormField {
 
 interface FormModalProps {
   type:
-    | 'service'
-    | 'course'
-    | 'ai_tool'
-    | 'community'
-    | 'meetup'
-    | 'contact'
-    | 'turning_point'
+  | 'service'
+  | 'course'
+  | 'ai_tool'
+  | 'community'
+  | 'meetup'
+  | 'contact'
+  | 'turning_point'
   originTitle?: string
   title?: string
   buttonText?: string
+  buttonClass?: string
   fields?: FormField[]
   isOpen?: boolean
   onClose?: () => void
 }
+
 
 /* ================= DEFAULT FIELDS ================= */
 const defaultFields: Record<string, FormField[]> = {
@@ -80,6 +82,7 @@ export default function FormModal({
   originTitle,
   title,
   buttonText,
+  buttonClass,
   fields,
   isOpen: externalOpen,
   onClose,
@@ -120,7 +123,7 @@ export default function FormModal({
 
       if (data.success) {
         setShowSuccess(true)
-        setTimeout(() => {close(); setShowSuccess(false)}, 1500)
+        setTimeout(() => { close(); setShowSuccess(false) }, 1500)
       } else {
         alert(data.message || 'Submission failed')
       }
@@ -137,11 +140,15 @@ export default function FormModal({
       {buttonText && (
         <button
           onClick={() => setInternalOpen(true)}
-          className="rounded-full bg-gradient-to-r from-primary to-[var(--electric-purple)] px-6 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
+          className={
+            buttonClass ??
+            "rounded-full bg-gradient-to-r from-primary to-[var(--electric-purple)] px-6 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
+          }
         >
           {buttonText}
         </button>
       )}
+
 
       {/* MODAL */}
       {isOpen && (

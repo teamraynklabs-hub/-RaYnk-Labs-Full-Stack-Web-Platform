@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken'
 
+export const runtime = "nodejs";
+
 /* =========================
    TYPES
 ========================= */
@@ -12,11 +14,13 @@ export interface AdminJWTPayload {
 /* =========================
    SECRET
 ========================= */
-const JWT_SECRET = process.env.JWT_SECRET
-
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined')
-}
+const JWT_SECRET: string = (() => {
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    throw new Error('JWT_SECRET is not defined')
+  }
+  return secret
+})()
 
 /* =========================
    SIGN TOKEN
@@ -33,7 +37,7 @@ export function signJWT(payload: AdminJWTPayload) {
 export function verifyJWT(token: string): AdminJWTPayload {
   try {
     return jwt.verify(token, JWT_SECRET) as AdminJWTPayload
-  } catch (error) {
+  } catch {
     throw new Error('Invalid or expired token')
   }
 }

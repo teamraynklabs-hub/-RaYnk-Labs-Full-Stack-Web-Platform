@@ -1,12 +1,10 @@
 import { cookies } from "next/headers";
-import { verifyJWT } from "./jwt";
 
-export function requireAdmin() {
-  const token = cookies().get("admin_token")?.value;
+export async function requireAdmin() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("admin_token")?.value;
 
   if (!token) {
     throw new Error("Unauthorized");
   }
-
-  return verifyJWT(token);
 }
